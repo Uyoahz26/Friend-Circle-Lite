@@ -83,7 +83,7 @@ jobs:
 
         deployment=$(curl -s \
           -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1")
+          "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&teamId=${{ secrets.VERCEL_TEAM_ID }}&limit=1")
 
         deploy_id=$(echo "$deployment" | jq -r '.deployments[0].uid')
 
@@ -91,9 +91,7 @@ jobs:
 
         curl -X POST \
           -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v13/deployments/$deploy_id/promote"
-
-
+          "https://api.vercel.com/v13/deployments/$deploy_id/promote?teamId=${{ secrets.VERCEL_TEAM_ID }}"
 
     - name: Delete Workflow Runs
       uses: Mattraks/delete-workflow-runs@v2
