@@ -79,19 +79,15 @@ jobs:
 
     - name: Install Vercel CLI
       run: npm install -g vercel
-      
-    - name: Promote to Production via Vercel CLI
+
+    - name: Deploy to Vercel Production
       run: |
-        vercel promote \
+        vercel deploy \
+          --prod \
           --yes \
           --token=${{ secrets.VERCEL_TOKEN }} \
           --scope=${{ secrets.VERCEL_ORG_ID }}
 
-    - name: Delete Workflow Runs
-      uses: Mattraks/delete-workflow-runs@v2
-      with:
-        retain_days: 30
-        keep_minimum_runs: 6
 
   keepalive-workflow:
     name: Keepalive Workflow
