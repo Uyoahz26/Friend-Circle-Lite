@@ -77,21 +77,15 @@ jobs:
     - name: Wait for Vercel Deployment
       run: sleep 30
 
-    - name: Promote Vercel Deployment to Production
+    - name: Install Vercel CLI
+      run: npm install -g vercel
+      
+    - name: Promote to Production via Vercel CLI
       run: |
-        echo "Fetching latest deployment..."
-
-        deployment=$(curl -s \
-          -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&teamId=${{ secrets.VERCEL_TEAM_ID }}&limit=1")
-
-        deploy_id=$(echo "$deployment" | jq -r '.deployments[0].uid')
-
-        echo "Promoting deployment: $deploy_id"
-
-        curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v13/deployments/$deploy_id/promote?teamId=${{ secrets.VERCEL_TEAM_ID }}"
+        vercel promote \
+          --yes \
+          --token=${{ secrets.VERCEL_TOKEN }} \
+          --scope=${{ secrets.VERCEL_ORG_ID }}
 
     - name: Delete Workflow Runs
       uses: Mattraks/delete-workflow-runs@v2
