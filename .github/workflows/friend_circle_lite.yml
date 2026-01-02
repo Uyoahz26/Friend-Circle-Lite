@@ -79,15 +79,20 @@ jobs:
 
     - name: Promote Vercel Deployment to Production
       run: |
+        echo "Fetching latest deployment..."
+
         deployment=$(curl -s \
           -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
           "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1")
 
         deploy_id=$(echo "$deployment" | jq -r '.deployments[0].uid')
 
+        echo "Promoting deployment: $deploy_id"
+
         curl -X POST \
           -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v1/deployments/$deploy_id/promote"
+          "https://api.vercel.com/v13/deployments/$deploy_id/promote"
+
 
 
     - name: Delete Workflow Runs
