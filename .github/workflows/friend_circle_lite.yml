@@ -73,6 +73,23 @@ jobs:
         git commit -m "⏱️ $(date +"%Y年%m月%d日-%H时%M分") GitHub Actions定时更新"
         git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:page
 
+
+    - name: Wait for Vercel Deployment
+      run: sleep 30
+
+    - name: Promote Vercel Deployment to Production
+      run: |
+        deployment=$(curl -s \
+          -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1")
+
+        deploy_id=$(echo "$deployment" | jq -r '.deployments[0].uid')
+
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          "https://api.vercel.com/v1/deployments/$deploy_id/promote"
+
+
     - name: Delete Workflow Runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
